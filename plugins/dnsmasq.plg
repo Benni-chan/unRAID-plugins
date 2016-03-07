@@ -1,0 +1,124 @@
+<?xml version='1.0' standalone='yes'?>
+
+<!DOCTYPE PLUGIN [
+<!ENTITY name      "dnsmasq">
+<!ENTITY author    "Benni-chan">
+<!ENTITY version   "2016.03.07">
+<!ENTITY launch    "Settings/DNSmasq">
+<!ENTITY gitURL    "https://raw.githubusercontent.com/&author;/unRAID-plugins/master">
+<!ENTITY pluginURL "&gitURL;/plugins/&name;.plg">
+<!ENTITY pkgURL	 "&gitURL;/source/packages">
+<!ENTITY plgpath   "/boot/config/plugins/&name;">
+<!ENTITY plgname	 "&name;-&version;-x86_64-1">
+<!ENTITY emhttp	 "/usr/local/emhttp/plugins/&name;">
+]>
+
+<PLUGIN name="&name;" author="&author;" launch="&launch;" version="&version;" pluginURL="&pluginURL;">
+
+<CHANGES>
+###2016.03.07
+- initial release.
+</CHANGES>
+
+<!--http://mirrors.slackware.com/slackware/slackware64-14.1/slackware64/n/dnsmasq-2.57-x86_64-1.txz-->
+<FILE Name="&plgpath;/dnsmasq-2.57-x86_64-1.txz" Run="upgradepkg --install-new">
+<URL>&pkgURL;/dnsmasq-2.57-x86_64-1.txz</URL>
+<MD5>d91297d6016dc92837a2b5eff6caee8a</MD5>
+</FILE>
+
+
+<!--
+The 'plugin' package file.
+-->
+<!--<FILE Name="&plgpath;/&plgname;.txz">
+<URL>&gitURL;/archive/&plgname;.txz</URL>
+</FILE>
+-->
+<!--
+The 'plugin' package MD5 hash.
+-->
+<!--<FILE Name="&plgpath;/&plgname;.md5">
+<URL>&gitURL;/archive/&plgname;.md5</URL>
+</FILE>
+-->
+<!--
+The 'install' script.
+-->
+<FILE Run="/bin/bash">
+<INLINE> 
+#Verify unRAID Version
+source /etc/unraid-version
+if [[ ${version:0:3} == 6.0 ]]; then
+  echo "unRAID version 6.1 or higher is required"
+  exit 1
+fi
+
+<!--# Verify and install plugin package
+sum1=$(/usr/bin/md5sum &plgpath;/&plgname;.txz)
+sum2=$(/usr/bin/cat &plgpath;/&plgname;.md5)
+if [ "${sum1:0:32}" != "${sum2:0:32}" ]; then
+  echo "Wrong 'plugin' package md5 hash."
+  rm &plgpath;/&plgname;.txz
+  rm &plgpath;/&plgname;.md5
+  exit 1
+else
+  upgradepkg --install-new &plgpath;/&plgname;.txz
+fi
+
+# remove old plugin name folder
+if [ -d /usr/local/emhttp/plugins/&name; ]; then
+ 	rm -f /usr/local/emhttp/plugins/&name;
+fi
+
+# create log directory
+if [ ! -d /var/log/&name; ]; then
+ 	mkdir -p /var/log/&name;
+fi
+chmod 755 /var/log/&name;
+-->
+
+# Cleaning old source files
+find &plgpath;/ -type f -iname "&name;*.txz" ! -iname "*&version;*" -delete
+find &plgpath;/ -type f -iname "&name;*.md5" ! -iname "*&version;*" -delete
+
+
+cp &plgpath;/dnsmasq.conf /etc
+cp &plgpath;/hosts /etc
+/usr/sbin/dnsmasq
+
+echo ""
+echo "-----------------------------------------------------------"
+echo " &name; has been installed."
+echo " This plugin requires Dynamix webGui to operate"
+echo " Copyright 2016, &author;"
+echo " Version: &version;"
+echo "-----------------------------------------------------------"
+echo ""
+</INLINE>
+</FILE>
+
+<!--
+The 'remove' script.
+-->
+<!--<FILE Run="/bin/bash" Method="remove">
+<INLINE>
+removepkg &plgpath;/&plgname;.txz
+rm -rf &emhttp;
+rm -f &plgpath;/&plgname;.txz
+rm -f &plgpath;/&plgname;.md5
+
+#remove installed packages
+removepkg &plgpath;/*.txz
+rm -f &plgpath;/*.txz
+
+echo ""
+echo "-----------------------------------------------------------"
+echo " &name; has been removed."
+echo " Copyright 2016, &author;"
+echo " Version: &version;"
+echo "-----------------------------------------------------------"
+echo ""
+</INLINE>
+</FILE>-->
+
+</PLUGIN>
