@@ -21,9 +21,9 @@
 </CHANGES>
 
 <!--http://mirrors.slackware.com/slackware/slackware64-14.1/slackware64/n/dnsmasq-2.57-x86_64-1.txz-->
-<FILE Name="&plgpath;/dnsmasq-2.57-x86_64-1.txz" Run="upgradepkg --install-new">
-<URL>&pkgURL;/dnsmasq-2.57-x86_64-1.txz</URL>
-<MD5>d91297d6016dc92837a2b5eff6caee8a</MD5>
+<FILE Name="&plgpath;/dnsmasq-2.75-x86_64-1.txz" Run="upgradepkg --install-new">
+<URL>&pkgURL;/dnsmasq-2.75-x86_64-1.txz</URL>
+<MD5>79bd9cf496be2bd39ffa522f916d5764</MD5>
 </FILE>
 
 
@@ -53,29 +53,7 @@ if [[ ${version:0:3} == 6.0 ]]; then
   exit 1
 fi
 
-<!--# Verify and install plugin package
-sum1=$(/usr/bin/md5sum &plgpath;/&plgname;.txz)
-sum2=$(/usr/bin/cat &plgpath;/&plgname;.md5)
-if [ "${sum1:0:32}" != "${sum2:0:32}" ]; then
-  echo "Wrong 'plugin' package md5 hash."
-  rm &plgpath;/&plgname;.txz
-  rm &plgpath;/&plgname;.md5
-  exit 1
-else
-  upgradepkg --install-new &plgpath;/&plgname;.txz
-fi
 
-# remove old plugin name folder
-if [ -d /usr/local/emhttp/plugins/&name; ]; then
- 	rm -f /usr/local/emhttp/plugins/&name;
-fi
-
-# create log directory
-if [ ! -d /var/log/&name; ]; then
- 	mkdir -p /var/log/&name;
-fi
-chmod 755 /var/log/&name;
--->
 
 # Cleaning old source files
 find &plgpath;/ -type f -iname "&name;*.txz" ! -iname "*&version;*" -delete
@@ -100,7 +78,7 @@ echo ""
 <!--
 The 'remove' script.
 -->
-<!--<FILE Run="/bin/bash" Method="remove">
+<FILE Run="/bin/bash" Method="remove">
 <INLINE>
 removepkg &plgpath;/&plgname;.txz
 rm -rf &emhttp;
@@ -119,6 +97,6 @@ echo " Version: &version;"
 echo "-----------------------------------------------------------"
 echo ""
 </INLINE>
-</FILE>-->
+</FILE>
 
 </PLUGIN>
